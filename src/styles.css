@@ -18,15 +18,3 @@ body {
   justify-content: center;
   align-items: center;
 }
-
-/* YouTube player — global rule needed because the iframe is created dynamically
-   outside Angular's template and doesn't get the component encapsulation attribute */
-#yt-player {
-  position: fixed !important;
-  top: -9999px !important;
-  left: -9999px !important;
-  width: 1px !important;
-  height: 1px !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}

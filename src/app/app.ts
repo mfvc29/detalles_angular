@@ -1,7 +1,6 @@
 import { Component, signal, OnInit, ChangeDetectorRef } from '@angular/core';
 
 declare const confetti: any;
-declare const YT: any;
 
 @Component({
   selector: 'app-root',
@@ -15,7 +14,7 @@ export class App implements OnInit {
   revealed = false;
   isPlaying = false;
 
-  private ytPlayer: any = null;
+  private audio: HTMLAudioElement | null = null;
 
   constructor(private cdr: ChangeDetectorRef) {}
 
@@ -67,64 +66,54 @@ export class App implements OnInit {
 
       setTimeout(() => {
         this.initStarfield();
-        this.initYouTubePlayer();
+        this.initAudioPlayer();
       }, 80);
     }, 500);
   }
 
   toggleAudio() {
-    if (!this.ytPlayer) return;
+    if (!this.audio) return;
     if (this.isPlaying) {
-      this.ytPlayer.pauseVideo();
+      this.audio.pause();
       this.isPlaying = false;
     } else {
-      this.ytPlayer.playVideo();
+      this.audio.play();
       this.isPlaying = true;
     }
     this.cdr.detectChanges();
   }
 
-  private initYouTubePlayer() {
-    const createPlayer = () => {
-      this.ytPlayer = new YT.Player('yt-player', {
-        width: '1',
-        height: '1',
-        videoId: 'sPMA1tqWuf4',
-        playerVars: {
-          autoplay: 1,
-          mute: 0,
-          controls: 0,
-          start: 10,   // empieza en el segundo 10
-          end: 268,    // se detiene en 4:28 (268 segundos)
-        },
-        events: {
-          onReady: (event: any) => {
-            event.target.playVideo();
-            this.isPlaying = true;
-            this.cdr.detectChanges();
-          },
-          onStateChange: (event: any) => {
-            // Cuando el video termina (ENDED = 0), vuelve al segundo 10
-            if (event.data === 0) {
-              this.ytPlayer.seekTo(10, true);
-              this.ytPlayer.playVideo();
-              this.isPlaying = true;
-            } else {
-              // 1 = playing, 2 = paused
-              this.isPlaying = event.data === 1;
-            }
-            this.cdr.detectChanges();
-          },
-        },
-      });
-    };
+  private initAudioPlayer() {
+    // Load the local mp3 file
+    this.audio = new Audio('perfect.mp3');
+    this.audio.currentTime = 10; // Start at second 10
 
-    if (typeof YT !== 'undefined' && YT.Player) {
-      createPlayer();
-    } else {
-      // API not ready yet — wait for the global callback
-      (window as any).onYouTubeIframeAPIReady = createPlayer;
-    }
+    // timeupdate event fires continuously during playback
+    this.audio.addEventListener('timeupdate', () => {
+      if (!this.audio) return;
+      // Loop back to 10s if we reach 4:28 (268 seconds)
+      if (this.audio.currentTime >= 268) {
+        this.audio.currentTime = 10;
+        this.audio.play();
+      }
+    });
+
+    this.audio.addEventListener('play', () => {
+      this.isPlaying = true;
+      this.cdr.detectChanges();
+    });
+
+    this.audio.addEventListener('pause', () => {
+      this.isPlaying = false;
+      this.cdr.detectChanges();
+    });
+
+    this.audio.play().then(() => {
+      this.isPlaying = true;
+      this.cdr.detectChanges();
+    }).catch(err => {
+      console.error("Autoplay prevented:", err);
+    });
   }
 
   private initStarfield() {
