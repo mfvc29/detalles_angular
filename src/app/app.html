@@ -1,0 +1,56 @@
+<!-- Vista principal -->
+<div class="scene" [class.blurred-out]="revealed">
+  <main class="glass-container">
+    <div class="content">
+      <div class="greeting">¡Hola, es para ti! ✨</div>
+      <h1 class="title">Espero que tengas un día increíble</h1>
+      <p class="message">
+        Quería hacerte este pequeño detalle porque eres una chica muy linda y genial, y siempre irradias buena energía. ¡Sigue brillando y nunca cambies!
+      </p>
+      <div class="interactive-btn-wrapper">
+        <button
+          id="sparkle-btn"
+          class="cute-btn"
+          [class.popping]="isPopping"
+          (click)="triggerSparkles($event)"
+        >
+          <span class="btn-icon">🌸</span> ¡Tócalo!
+        </button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Vista romántica (entra desde abajo con fade) -->
+<div class="romance-scene" [class.romance-visible]="revealed">
+
+  <!-- Fondo de estrellas canvas -->
+  <canvas id="star-canvas"></canvas>
+
+  <!-- Tarjeta romántica -->
+  <div class="romance-card" [class.romance-card-in]="revealed">
+    <button
+      class="ring"
+      [class.paused]="!isPlaying"
+      (click)="toggleAudio()"
+      [title]="isPlaying ? 'Pausar música' : 'Reproducir música'"
+      aria-label="Play / Pausa"
+    >{{ isPlaying ? '💖' : '🤍' }}</button>
+    <p class="romance-subtitle">♪ para ti ♪</p>
+    <h2 class="romance-title">Eres algo especial en este mundo</h2>
+    <div class="romance-divider"></div>
+    <p class="romance-poem">
+      A veces no se necesitan
+      <em>grandes gestos</em> para saber<br/>
+      que alguien piensa en ti.<br/>
+      Basta con un pequeño detalle,<br/>
+      una canción que <em>suena de fondo</em>,<br/>
+      y la certeza de que hay personas<br/>
+      que valoran <em>lo especial que eres</em>.
+    </p>
+    <p class="romance-closing">✦ &nbsp; con cariño &nbsp; ✦</p>
+  </div>
+
+  <!-- YouTube player (YT API crea el iframe aquí) -->
+  <div id="yt-player"></div>
+</div>
